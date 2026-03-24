@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; background: #1A202C; border: 2px solid #00E5FF; border-radius: 15px; padding: 50px; box-shadow: 0 0 25px rgba(0, 229, 255, 0.2); text-align: center; color: white;">
+    
+    <img src="https://api.geode-sdk.org/v1/mods/{{ mod.mod_id }}/logo" onerror="this.src='https://geode-sdk.org/assets/logo.png'" alt="Mod Logo" style="width: 180px; height: 180px; border-radius: 20px; border: 4px solid #39FF14; object-fit: cover; margin-bottom: 25px;">
+    
+    <h1 style="color: #39FF14; font-size: 3.5em; margin: 0 0 10px 0; text-shadow: 0 0 10px rgba(57,255,20,0.3);">{{ mod.title }}</h1>
+    <h3 style="color: #A0AEC0; margin-top: 0; font-size: 1.5em;">Created by: <span style="color: white;">{{ mod.creator }}</span></h3>
+    
+    <div style="display: inline-block; background: #2D3748; padding: 12px 25px; border-radius: 30px; color: #F6E05E; font-weight: bold; font-size: 1.3em; margin: 25px 0; border: 2px solid #F6E05E;">
+        ⬇️ {{ "{:,}".format(mod.downloads) }} Total Downloads
+    </div>
+    
+    <div style="text-align: left; background: #2D3748; padding: 30px; border-radius: 12px; border-left: 6px solid #00E5FF; margin-top: 20px;">
+        <h4 style="color: #00E5FF; margin-top: 0; font-size: 1.5em; margin-bottom: 15px;">Mod Description</h4>
+        <p style="color: #E2E8F0; font-size: 1.2em; line-height: 1.7;">
+            {{ mod.description }}
+        </p>
+    </div>
+    
+    <div style="margin-top: 50px;">
+        <a href="/" style="text-decoration: none; background: #39FF14; color: black; padding: 15px 30px; border-radius: 10px; font-weight: bold; font-size: 1.2em; transition: 0.3s; box-shadow: 0 0 10px rgba(57,255,20,0.4);">⬅️ Back to All Mods</a>
+    </div>
+</div>
+{% endblock %}
