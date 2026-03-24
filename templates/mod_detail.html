@@ -1,17 +1,12 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <div style="max-width: 800px; margin: 40px auto; background: #1A202C; border: 1px solid #2D3748; padding: 50px; text-align: center; color: white;">
-    
     <img src="https://api.geode-sdk.org/v1/mods/{{ mod.mod_id }}/logo" onerror="this.src='https://geode-sdk.org/assets/logo.png'" alt="Mod Logo" style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 20px; border: 2px solid #00E5FF;">
-    
     <h1 style="color: white; font-size: 3em; margin: 0 0 5px 0; text-transform: uppercase;">{{ mod.title }}</h1>
     <h3 style="color: #00E5FF; margin-top: 0; font-size: 1.3em; font-weight: normal; text-transform: uppercase;">BY <span style="font-weight: bold;">{{ mod.creator }}</span></h3>
-    
     <div style="color: #39FF14; font-weight: bold; font-size: 1.2em; margin: 15px 0; letter-spacing: 1px;">
         {{ "{:,}".format(mod.downloads) }} DOWNLOADS
     </div>
-
     {% if mod.download_link %}
     <div style="margin: 30px 0;">
         <a href="{{ mod.download_link }}" target="_blank" style="text-decoration: none; background: #39FF14; color: #1A202C; padding: 15px 40px; font-weight: bold; font-size: 1.2em; text-transform: uppercase; transition: 0.1s; display: inline-block; border: 2px solid #39FF14;" onmouseover="this.style.background='transparent'; this.style.color='#39FF14';" onmouseout="this.style.background='#39FF14'; this.style.color='#1A202C';">
@@ -23,12 +18,10 @@
         NO DIRECT DOWNLOAD LINK AVAILABLE
     </div>
     {% endif %}
-    
     <div style="text-align: left; background: #2D3748; padding: 30px; margin-top: 30px; line-height: 1.6; border-left: 4px solid #00E5FF;">
         <h4 style="color: #A0AEC0; margin-top: 0; font-size: 1em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">DESCRIPTION</h4>
         <p style="color: #E2E8F0; font-size: 1.1em; white-space: pre-wrap; margin: 0;">{{ mod.description }}</p>
     </div>
-    
     <div style="margin-top: 40px;">
         <a href="javascript:history.back()" style="color: #A0AEC0; text-decoration: none; font-size: 1.1em; border-bottom: 1px solid #A0AEC0; padding-bottom: 2px; transition: 0.1s; text-transform: uppercase;" onmouseover="this.style.color='#00E5FF'; this.style.borderColor='#00E5FF';" onmouseout="this.style.color='#A0AEC0'; this.style.borderColor='#A0AEC0';">
             BACK TO LIST
