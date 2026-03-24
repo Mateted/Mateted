@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Welcome to the GD Mod Hub</h2>
+    <p>Browse the latest Geometry Dash mods below.</p>
+
+    <hr style="border-color: #00E5FF;">
+
+    {% for mod in mods %}
+        <div style="background: #2D3748; padding: 15px; margin-bottom: 10px; border-radius: 8px;">
+            <h3 style="margin-top: 0; color: #00E5FF;">{{ mod.title }}</h3>
+            <p><strong>Creator:</strong> {{ mod.creator }}</p>
+            <p>{{ mod.description }}</p>
+        </div>
+    {% else %}
+        <p style="color: #ff4444;">No mods uploaded yet. Be the first!</p>
+    {% endfor %}
+
+{% endblock %}

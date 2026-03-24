@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 400px; margin: auto; text-align: center; padding-top: 50px;">
+    <h2 style="color: #00E5FF;">🔑 Member Login</h2>
+    
+    {% if error %}
+        <p style="color: #ff4444; font-weight: bold;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST" style="background: #1A202C; padding: 20px; border-radius: 10px; border: 1px solid #39FF14;">
+        <input type="text" name="username" placeholder="Username" style="display: block; width: 90%; margin: 10px auto; padding: 10px;" required>
+        <input type="password" name="password" placeholder="Password" style="display: block; width: 90%; margin: 10px auto; padding: 10px;" required>
+        <button type="submit" style="background: #39FF14; width: 95%; padding: 10px; border: none; font-weight: bold; cursor: pointer;">
+            Login
+        </button>
+    </form>
+</div>
+{% endblock %}

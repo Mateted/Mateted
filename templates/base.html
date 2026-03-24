@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GD Mod Hub</title>
+    <style>
+        body { background-color: #121212; color: #ffffff; font-family: sans-serif; margin: 0; }
+        nav { background-color: #1A202C; padding: 15px; border-bottom: 2px solid #00E5FF; }
+        nav a { color: #39FF14; text-decoration: none; margin-right: 15px; font-weight: bold; }
+        .container { padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/">Mod Hub</a>
+        <a href="/upload">Upload Mod</a>
+        <a href="/login">Login</a>
+    </nav>
+
+    <div class="container">
+        <h1>If you can see this, the server is working!</h1>
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

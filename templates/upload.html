@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 500px; margin: auto; background: #1A202C; padding: 30px; border-radius: 12px; border: 1px solid #00E5FF;">
+    <h2 style="color: #39FF14; text-align: center;">Upload New Mod</h2>
+    
+    <form method="POST">
+        <label>Mod Title</label>
+        <input type="text" name="title" placeholder="e.g. Bloodbath Texture Pack" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none;" required>
+        
+        <label>Creator Name</label>
+        <input type="text" name="creator" placeholder="Your Username" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none;" required>
+        
+        <label>Description</label>
+        <textarea name="description" placeholder="What does this mod do?" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; height: 100px;" required></textarea>
+        
+        <button type="submit" style="width: 100%; padding: 12px; background: #39FF14; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px;">
+            Publish Mod
+        </button>
+    </form>
+</div>
+{% endblock %}
