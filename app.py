@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
+import uuid
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -11,7 +12,9 @@ db = SQLAlchemy(app)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    reset_token = db.Column(db.String(100), nullable=True)
 
 class Mod(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -77,18 +80,15 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    sort_by = request.args.get('sort', 'downloads_desc')
     page = request.args.get('page', 1, type=int)
     search_query = request.args.get('q', '').strip()
     query = Mod.query
     if search_query:
         query = query.filter(Mod.title.ilike(f'%{search_query}%'))
-    if sort_by == 'az': query = query.order_by(Mod.title.asc())
-    elif sort_by == 'za': query = query.order_by(Mod.title.desc())
-    elif sort_by == 'downloads_asc': query = query.order_by(Mod.downloads.asc())
-    else: query = query.order_by(Mod.downloads.desc())
+    
+    query = query.order_by(Mod.downloads.desc())
     mods_page = query.paginate(page=page, per_page=10, error_out=False)
-    return render_template('index.html', mods_page=mods_page, sort_by=sort_by, search_query=search_query)
+    return render_template('index.html', mods_page=mods_page, search_query=search_query)
 
 @app.route('/mod/<mod_id>')
 def mod_detail(mod_id):
@@ -103,12 +103,16 @@ def upload():
 def register():
     if request.method == 'POST':
         username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
-        if User.query.filter_by(username=username).first():
-            return "Username already exists! Try another one."
         
+        if User.query.filter_by(username=username).first():
+            return "Username already exists!"
+        if User.query.filter_by(email=email).first():
+            return "Email is already registered!"
+            
         hashed_pw = generate_password_hash(password)
-        new_user = User(username=username, password_hash=hashed_pw)
+        new_user = User(username=username, email=email, password_hash=hashed_pw)
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('login'))
@@ -123,23 +127,56 @@ def login():
         
         if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.id
-            session['username'] = user.username
             return redirect(url_for('profile'))
         else:
             return "Invalid username or password!"
     return render_template('login.html')
 
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+        if user:
+            token = str(uuid.uuid4())
+            user.reset_token = token
+            db.session.commit()
+            
+            reset_link = url_for('reset_password', token=token, _external=True)
+            print(f"\n\n=== NEW MESSAGE ===")
+            print(f"To: {user.email}")
+            print(f"Click this link to reset your password: {reset_link}")
+            print(f"===================\n\n")
+            
+            return "A password reset link has been sent! Check your terminal."
+        return "Email not found."
+    return render_template('forgot_password.html')
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    user = User.query.filter_by(reset_token=token).first()
+    if not user:
+        return "Invalid or expired token."
+        
+    if request.method == 'POST':
+        new_password = request.form['password']
+        user.password_hash = generate_password_hash(new_password)
+        user.reset_token = None
+        db.session.commit()
+        return redirect(url_for('login'))
+    return render_template('reset_password.html')
+
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
-    session.pop('username', None)
     return redirect(url_for('index'))
 
 @app.route('/profile')
 def profile():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('profile.html', username=session['username'])
+    user = User.query.get(session['user_id'])
+    return render_template('profile.html', user=user)
 
 if __name__ == '__main__':
     app.run(debug=True)
