@@ -1,26 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GD Mod Hub</title>
     <style>
-        body { background-color: #121212; color: #ffffff; font-family: sans-serif; margin: 0; }
-        nav { background-color: #1A202C; padding: 15px; border-bottom: 2px solid #00E5FF; }
-        nav a { color: #39FF14; text-decoration: none; margin-right: 15px; font-weight: bold; }
-        .container { padding: 20px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0F131A;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #1A202C;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #00E5FF;
+        }
+        .nav-brand {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #00E5FF; 
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .nav-links a {
+            color: #E2E8F0;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-left: 25px;
+            transition: color 0.1s ease;
+        }
+        .nav-links a:hover {
+            color: #00E5FF;
+        }
+        .container {
+            max-width: 1000px; 
+            margin: 40px auto;
+            padding: 0 20px;
+        }
     </style>
 </head>
 <body>
-
-    <nav>
-        <a href="/">Mod Hub</a>
-        <a href="/upload">Upload Mod</a>
-        <a href="/login">Login</a>
-    </nav>
-
-    <div class="container">
-        {% block content %}
-        {% endblock %}
+    <div class="navbar">
+        <a href="/" class="nav-brand">GD Mod Hub</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            {% if session.get('user_id') %}
+                <a href="/profile" style="color: #39FF14;">My Profile</a>
+                <a href="/upload">Upload</a>
+                <a href="/logout">Logout</a>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/register" style="color: #00E5FF;">Sign Up</a>
+            {% endif %}
+        </div>
     </div>
-
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
 </body>
 </html>

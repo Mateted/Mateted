@@ -1,19 +1,12 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div style="max-width: 400px; margin: auto; text-align: center; padding-top: 50px;">
-    <h2 style="color: #00E5FF;">Member Login</h2>
-    
-    {% if error %}
-        <p style="color: #ff4444; font-weight: bold;">{{ error }}</p>
-    {% endif %}
-
-    <form method="POST" style="background: #1A202C; padding: 20px; border-radius: 10px; border: 1px solid #39FF14;">
-        <input type="text" name="username" placeholder="Username" style="display: block; width: 90%; margin: 10px auto; padding: 10px;" required>
-        <input type="password" name="password" placeholder="Password" style="display: block; width: 90%; margin: 10px auto; padding: 10px;" required>
-        <button type="submit" style="background: #39FF14; width: 95%; padding: 10px; border: none; font-weight: bold; cursor: pointer;">
-            Login
-        </button>
+<div style="max-width: 400px; margin: 50px auto; background: #1A202C; border: 1px solid #39FF14; padding: 40px; text-align: center;">
+    <h2 style="color: #39FF14; text-transform: uppercase; margin-bottom: 30px;">Welcome Back</h2>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required style="width: 90%; padding: 15px; margin-bottom: 15px; background: #0F131A; border: 1px solid #2D3748; color: white; font-size: 1.1em; outline: none;">
+        <input type="password" name="password" placeholder="Password" required style="width: 90%; padding: 15px; margin-bottom: 25px; background: #0F131A; border: 1px solid #2D3748; color: white; font-size: 1.1em; outline: none;">
+        <button type="submit" style="width: 100%; padding: 15px; background: #39FF14; color: #1A202C; border: none; font-weight: bold; font-size: 1.2em; cursor: pointer; text-transform: uppercase; margin-bottom: 20px;">Log In</button>
     </form>
+    <a href="/forgot_password" style="color: #A0AEC0; text-decoration: none; font-size: 0.9em; transition: 0.1s;" onmouseover="this.style.color='#00E5FF'" onmouseout="this.style.color='#A0AEC0'">Forgot Password?</a>
 </div>
 {% endblock %}
