@@ -28,15 +28,20 @@ class Mod(db.Model):
 
 with app.app_context():
     db.create_all()
-    if Mod.query.count() < 10:
+    
+    if Mod.query.count() < 500:
+        print("\n Downloading mods ")
         try:
             geode_mods = []
-            for page in range(1, 4):
+           
+            for page in range(1, 8):
+                print(f"   -> Fetching page {page}...")
                 url = f"https://api.geode-sdk.org/v1/mods?per_page=100&page={page}"
                 response = requests.get(url)
                 if response.status_code == 200:
                     geode_mods.extend(response.json().get('payload', {}).get('data', []))
             
+            print(f"Saving {len(geode_mods)} mods to your database...")
             for item in geode_mods:
                 mod_id = item.get('id', 'Unknown ID')
                 mod_title = item.get('name') or item.get('title')
@@ -75,8 +80,9 @@ with app.app_context():
                     )
                     db.session.add(new_mod)
             db.session.commit()
+            print("Finished saving mods!\n")
         except Exception as e:
-            print(e)
+            print(f"Error: {e}")
 
 @app.route('/')
 def index():
