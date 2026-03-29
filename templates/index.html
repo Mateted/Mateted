@@ -6,7 +6,7 @@
     
     <form action="{{ url_for('index') }}" method="GET" style="margin: 30px auto; max-width: 600px; display: flex;">
         <input type="text" name="q" value="{{ search_query }}" placeholder="Search for a mod..." style="flex: 1; padding: 15px; background: #1A202C; border: 1px solid #00E5FF; color: white; outline: none; font-size: 1.1em;">
-        <button type="submit" style="padding: 15px 30px; background: #00E5FF; color: #1A202C; border: none; font-weight: bold; cursor: pointer; font-size: 1.1em; transition: 0.1s;" onmouseover="this.style.background='#39FF14'" onmouseout="this.style.background='#00E5FF'">SEARCH</button>
+        <button type="submit" style="padding: 15px 30px; background: #00E5FF; color: #1A202C; border: none; font-weight: bold; cursor: pointer; font-size: 1.1em;">SEARCH</button>
     </form>
 </div>
 
@@ -21,7 +21,7 @@
         </thead>
         <tbody>
             {% for mod in mods_page.items %}
-            <tr onclick="window.location.href='/mod/{{ mod.mod_id }}'" style="border-top: 1px solid #2D3748; transition: background 0.1s ease; cursor: pointer;" onmouseover="this.style.background='rgba(255, 255, 255, 0.05)';" onmouseout="this.style.background='transparent';">
+            <tr onclick="window.location.href='/mod/{{ mod.mod_id }}'" style="border-top: 1px solid #2D3748; cursor: pointer;">
                 <td style="padding: 15px; text-align: center;">
                     <img src="https://api.geode-sdk.org/v1/mods/{{ mod.mod_id }}/logo" onerror="this.src='https://geode-sdk.org/assets/logo.png'" alt="Logo" style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #4A5568;">
                 </td>
@@ -44,7 +44,7 @@
 
 <div style="text-align: center; margin-top: 40px; margin-bottom: 40px; font-size: 1.1em;">
     {% if mods_page.has_prev %}
-        <a href="{{ url_for('index', page=mods_page.prev_num, q=search_query) }}" style="color: #1A202C; text-decoration: none; padding: 10px 20px; background: #00E5FF; margin-right: 10px; font-weight: bold; transition: 0.1s;" onmouseover="this.style.background='#39FF14'" onmouseout="this.style.background='#00E5FF'">PREV</a>
+        <a href="{{ url_for('index', page=mods_page.prev_num, q=search_query) }}" style="color: #1A202C; text-decoration: none; padding: 10px 20px; background: #00E5FF; margin-right: 10px; font-weight: bold;">PREV</a>
     {% endif %}
     
     <span style="color: white; font-weight: bold; padding: 10px 20px; background: #2D3748; border: 1px solid #4A5568;">
@@ -52,7 +52,7 @@
     </span>
     
     {% if mods_page.has_next %}
-        <a href="{{ url_for('index', page=mods_page.next_num, q=search_query) }}" style="color: #1A202C; text-decoration: none; padding: 10px 20px; background: #00E5FF; margin-left: 10px; font-weight: bold; transition: 0.1s;" onmouseover="this.style.background='#39FF14'" onmouseout="this.style.background='#00E5FF'">NEXT</a>
+        <a href="{{ url_for('index', page=mods_page.next_num, q=search_query) }}" style="color: #1A202C; text-decoration: none; padding: 10px 20px; background: #00E5FF; margin-left: 10px; font-weight: bold;">NEXT</a>
     {% endif %}
 </div>
 {% endblock %}
