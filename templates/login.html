@@ -2,11 +2,22 @@
 {% block content %}
 <div style="max-width: 400px; margin: 50px auto; background: #1A202C; border: 1px solid #39FF14; padding: 40px; text-align: center;">
     <h2 style="color: #39FF14; text-transform: uppercase; margin-bottom: 30px;">Welcome Back</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="margin-bottom: 20px; padding: 10px; border: 1px solid {% if category == 'error' %}#FC8181{% else %}#39FF14{% endif %}; color: {% if category == 'error' %}#FC8181{% else %}#39FF14{% endif %};">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <form method="POST">
         <input type="text" name="username" placeholder="Username" required style="width: 90%; padding: 15px; margin-bottom: 15px; background: #0F131A; border: 1px solid #2D3748; color: white; font-size: 1.1em; outline: none;">
         <input type="password" name="password" placeholder="Password" required style="width: 90%; padding: 15px; margin-bottom: 25px; background: #0F131A; border: 1px solid #2D3748; color: white; font-size: 1.1em; outline: none;">
         <button type="submit" style="width: 100%; padding: 15px; background: #39FF14; color: #1A202C; border: none; font-weight: bold; font-size: 1.2em; cursor: pointer; text-transform: uppercase; margin-bottom: 20px;">Log In</button>
     </form>
-    <a href="/forgot_password" style="color: #A0AEC0; text-decoration: none; font-size: 0.9em; transition: 0.1s;" onmouseover="this.style.color='#00E5FF'" onmouseout="this.style.color='#A0AEC0'">Forgot Password?</a>
+    <a href="/forgot_password" style="color: #A0AEC0; text-decoration: none; font-size: 0.9em;">Forgot Password?</a>
 </div>
 {% endblock %}

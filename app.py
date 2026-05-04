@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
@@ -9,12 +9,18 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SECRET_KEY'] = 'super_secret_key_for_sessions'
 db = SQLAlchemy(app)
 
+user_library = db.Table('user_library',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('mod_id', db.Integer, db.ForeignKey('mod.id'), primary_key=True)
+)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     reset_token = db.Column(db.String(100), nullable=True)
+    saved_mods = db.relationship('Mod', secondary=user_library, backref=db.backref('users_who_saved', lazy='dynamic'))
 
 class Mod(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -33,7 +39,7 @@ with app.app_context():
         print("\n Downloading mods ")
         try:
             geode_mods = []
-           
+            
             for page in range(1, 8):
                 print(f"   -> Fetching page {page}...")
                 url = f"https://api.geode-sdk.org/v1/mods?per_page=100&page={page}"
@@ -99,10 +105,53 @@ def index():
 @app.route('/mod/<mod_id>')
 def mod_detail(mod_id):
     mod = Mod.query.filter_by(mod_id=mod_id).first_or_404()
-    return render_template('mod_detail.html', mod=mod)
+    is_saved = False
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        if mod in user.saved_mods:
+            is_saved = True
+    return render_template('mod_detail.html', mod=mod, is_saved=is_saved)
 
-@app.route('/upload')
+@app.route('/save_mod/<int:id>')
+def save_mod(id):
+    if 'user_id' not in session:
+        flash("You must be logged in to save mods.", "error")
+        return redirect(url_for('login'))
+    user = User.query.get(session['user_id'])
+    mod = Mod.query.get_or_404(id)
+    if mod not in user.saved_mods:
+        user.saved_mods.append(mod)
+        db.session.commit()
+    return redirect(url_for('profile'))
+
+@app.route('/unsave_mod/<int:id>')
+def unsave_mod(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user = User.query.get(session['user_id'])
+    mod = Mod.query.get_or_404(id)
+    if mod in user.saved_mods:
+        user.saved_mods.remove(mod)
+        db.session.commit()
+    return redirect(url_for('profile'))
+
+@app.route('/upload', methods=['GET', 'POST'])
 def upload():
+    if 'user_id' not in session:
+        flash("You must be logged in to upload mods.", "error")
+        return redirect(url_for('login'))
+        
+    if request.method == 'POST':
+        new_mod = Mod(
+            mod_id="custom." + str(uuid.uuid4())[:8],
+            title=request.form['title'],
+            creator=request.form['creator'],
+            description=request.form['description'],
+            downloads=0
+        )
+        db.session.add(new_mod)
+        db.session.commit()
+        return redirect(url_for('index'))
     return render_template('upload.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -113,14 +162,17 @@ def register():
         password = request.form['password']
         
         if User.query.filter_by(username=username).first():
-            return "Username already exists!"
+            flash("Username already exists!", "error")
+            return redirect(url_for('register'))
         if User.query.filter_by(email=email).first():
-            return "Email is already registered!"
+            flash("Email is already registered!", "error")
+            return redirect(url_for('register'))
             
         hashed_pw = generate_password_hash(password)
         new_user = User(username=username, email=email, password_hash=hashed_pw)
         db.session.add(new_user)
         db.session.commit()
+        flash("Account created successfully! Please log in.", "success")
         return redirect(url_for('login'))
     return render_template('register.html')
 
@@ -135,8 +187,29 @@ def login():
             session['user_id'] = user.id
             return redirect(url_for('profile'))
         else:
-            return "Invalid username or password!"
+            flash("Invalid username or password!", "error")
+            return redirect(url_for('login'))
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('index'))
+
+@app.route('/profile')
+@app.route('/profile/<username>')
+def profile(username=None):
+    if username:
+        user = User.query.filter_by(username=username).first_or_404()
+        own_profile = ('user_id' in session and session['user_id'] == user.id)
+    else:
+        if 'user_id' not in session:
+            flash("Please log in to view your profile.", "error")
+            return redirect(url_for('login'))
+        user = User.query.get(session['user_id'])
+        own_profile = True
+        
+    return render_template('profile.html', user=user, own_profile=own_profile)
 
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
@@ -147,13 +220,11 @@ def forgot_password():
             token = str(uuid.uuid4())
             user.reset_token = token
             db.session.commit()
-            
             reset_link = url_for('reset_password', token=token, _external=True)
             print(f"\n\n=== NEW MESSAGE ===")
             print(f"To: {user.email}")
             print(f"Click this link to reset your password: {reset_link}")
             print(f"===================\n\n")
-            
             return "A password reset link has been sent! Check your terminal."
         return "Email not found."
     return render_template('forgot_password.html')
@@ -171,18 +242,6 @@ def reset_password(token):
         db.session.commit()
         return redirect(url_for('login'))
     return render_template('reset_password.html')
-
-@app.route('/logout')
-def logout():
-    session.pop('user_id', None)
-    return redirect(url_for('index'))
-
-@app.route('/profile')
-def profile():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    user = User.query.get(session['user_id'])
-    return render_template('profile.html', user=user)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -2,6 +2,17 @@
 {% block content %}
 <div style="max-width: 400px; margin: 50px auto; background: #1A202C; border: 1px solid #00E5FF; padding: 40px; text-align: center;">
     <h2 style="color: #00E5FF; text-transform: uppercase; margin-bottom: 30px;">Create Account</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="margin-bottom: 20px; padding: 10px; border: 1px solid {% if category == 'error' %}#FC8181{% else %}#39FF14{% endif %}; color: {% if category == 'error' %}#FC8181{% else %}#39FF14{% endif %};">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <form method="POST">
         <input type="text" name="username" placeholder="Username" required style="width: 90%; padding: 15px; margin-bottom: 15px; background: #0F131A; border: 1px solid #2D3748; color: white; font-size: 1.1em; outline: none;">
         <input type="email" name="email" placeholder="Email Address" required style="width: 90%; padding: 15px; margin-bottom: 15px; background: #0F131A; border: 1px solid #2D3748; color: white; font-size: 1.1em; outline: none;">
