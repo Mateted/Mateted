@@ -26,11 +26,11 @@
     {% if session.get('user_id') %}
     <div style="margin: 15px 0 30px 0;">
         {% if is_saved %}
-            <a href="{{ url_for('unsave_mod', mod_id=mod.mod_id) }}" style="color: #FC8181; text-decoration: none; font-weight: bold; font-size: 1.1em; border: 1px solid #FC8181; padding: 10px 20px; transition: 0.2s;" onmouseover="this.style.background='#FC8181'; this.style.color='#1A202C';" onmouseout="this.style.background='transparent'; this.style.color='#FC8181';">
+            <a href="{{ url_for('unsave_mod', id=mod.id) }}" style="color: #FC8181; text-decoration: none; font-weight: bold; font-size: 1.1em; border: 1px solid #FC8181; padding: 10px 20px; transition: 0.2s;" onmouseover="this.style.background='#FC8181'; this.style.color='#1A202C';" onmouseout="this.style.background='transparent'; this.style.color='#FC8181';">
                 [-] REMOVE FROM LIBRARY
             </a>
         {% else %}
-            <a href="{{ url_for('save_mod', mod_id=mod.mod_id) }}" style="color: #00E5FF; text-decoration: none; font-weight: bold; font-size: 1.1em; border: 1px solid #00E5FF; padding: 10px 20px; transition: 0.2s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#1A202C';" onmouseout="this.style.background='transparent'; this.style.color='#00E5FF';">
+            <a href="{{ url_for('save_mod', id=mod.id) }}" style="color: #00E5FF; text-decoration: none; font-weight: bold; font-size: 1.1em; border: 1px solid #00E5FF; padding: 10px 20px; transition: 0.2s;" onmouseover="this.style.background='#00E5FF'; this.style.color='#1A202C';" onmouseout="this.style.background='transparent'; this.style.color='#00E5FF';">
                 [+] SAVE TO LIBRARY
             </a>
         {% endif %}

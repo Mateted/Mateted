@@ -138,7 +138,7 @@ def mod_detail(mod_id):
     
     if 'user_id' in session:
         user = User.query.get(session['user_id'])
-        if mod in user.saved_mods:
+        if user and mod in user.saved_mods:
             is_saved = True
             
     return render_template('mod_detail.html', mod=mod, is_saved=is_saved)
@@ -244,18 +244,13 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/profile')
-@app.route('/profile/<username>')
-def profile(username=None):
-    # This route handles both private dashboard viewing and public profile checking
-    if username:
-        user = User.query.filter_by(username=username).first_or_404()
-        own_profile = ('user_id' in session and session['user_id'] == user.id)
-    else:
-        if 'user_id' not in session:
-            flash("Please log in to view your profile.", "error")
-            return redirect(url_for('login'))
-        user = User.query.get(session['user_id'])
-        own_profile = True
+def profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    user = User.query.get(session.get('user_id'))
+    
+    return render_template('profile.html', username=user.username, saved_mods=user.saved_mods)
         
     return render_template('profile.html', user=user, own_profile=own_profile)
 
