@@ -6,18 +6,15 @@ import uuid
 
 app = Flask(__name__)
 
-# Configuring the database. Using SQLite as it's a reliable, persistent storage method for this scale.
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SECRET_KEY'] = 'super_secret_key_for_sessions'
-# Disabling track modifications to follow PEP8/Flask conventions and save system resources
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# --- DATABASE MODELS ---
+#DATABASE MODELS#
 
 # I created this helper table to manage the Many-to-Many relationship between Users and Mods.
-# This allows multiple users to save the same mod to their library without duplicating the mod's data.
 user_library = db.Table('user_library',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('mod_id', db.Integer, db.ForeignKey('mod.id'), primary_key=True)
@@ -27,11 +24,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    # Storing a hash instead of a plain text password to address the privacy/security implication
     password_hash = db.Column(db.String(256), nullable=False)
     reset_token = db.Column(db.String(100), nullable=True)
     
-    # Establishing the link to the Many-to-Many table so users can access their saved mods easily
     saved_mods = db.relationship('Mod', secondary=user_library, backref=db.backref('users_who_saved', lazy='dynamic'))
 
 class Mod(db.Model):
@@ -44,7 +39,7 @@ class Mod(db.Model):
     logo_url = db.Column(db.String(300), default='')
     download_link = db.Column(db.String(300), default='')
 
-# --- DATABASE INITIALIZATION & API FETCHING ---
+#DATABASE INITIALIZATION & API FETCHING#
 
 with app.app_context():
     db.create_all()
@@ -52,8 +47,7 @@ with app.app_context():
     # Only fetch from the Geode API if the database is mostly empty to save startup time
     if Mod.query.count() < 500:
         print("\n Downloading mods from Geode API...")
-        # Wrapping this in a try/except block makes the app robust; if the Geode API is offline, 
-        # the app won't crash, it will just load with whatever is already in the database.
+    
         try:
             geode_mods = []
             
@@ -66,7 +60,7 @@ with app.app_context():
             
             print(f"Saving {len(geode_mods)} mods to your database...")
             
-            # Iterating through the JSON data and extracting specific keys to fit my database schema
+
             for item in geode_mods:
                 mod_id = item.get('id', 'Unknown ID')
                 mod_title = item.get('name') or item.get('title')
@@ -80,7 +74,6 @@ with app.app_context():
                 if not mod_title or mod_title == mod_id:
                     mod_title = mod_id.split('.')[-1].replace('-', ' ').title()
                 
-                # Safely handling nested developer dictionaries to prevent TypeErrors
                 mod_creator = "Unknown Creator"
                 if isinstance(item.get('developer'), str):
                     mod_creator = item['developer']
@@ -112,7 +105,7 @@ with app.app_context():
         except Exception as e:
             print(f"API Error: {e} - Starting app with local data only.")
 
-# --- ROUTES & LOGIC ---
+# ROUTES & LOGIC #
 
 @app.route('/')
 def index():
@@ -122,7 +115,7 @@ def index():
     
     query = Mod.query
     if search_query:
-        # Using ilike for case-insensitive searching
+ 
         query = query.filter(Mod.title.ilike(f'%{search_query}%'))
     
     query = query.order_by(Mod.downloads.desc())
@@ -145,7 +138,7 @@ def mod_detail(mod_id):
 
 @app.route('/save_mod/<int:id>')
 def save_mod(id):
-    # Security implication: Only authenticated users can alter the database
+
     if 'user_id' not in session:
         flash("You must be logged in to save mods.", "error")
         return redirect(url_for('login'))
@@ -153,7 +146,7 @@ def save_mod(id):
     user = User.query.get(session['user_id'])
     mod = Mod.query.get_or_404(id)
     
-    # Checking if the mod is already saved to prevent duplicates
+
     if mod not in user.saved_mods:
         user.saved_mods.append(mod)
         db.session.commit()
@@ -181,7 +174,7 @@ def upload():
         return redirect(url_for('login'))
         
     if request.method == 'POST':
-        # Generating a UUID ensures custom mods never have conflicting IDs with Geode API mods
+    
         new_mod = Mod(
             mod_id="custom." + str(uuid.uuid4())[:8],
             title=request.form['title'],
@@ -202,7 +195,7 @@ def register():
         email = request.form['email']
         password = request.form['password']
         
-        # Checking for boundary cases: preventing duplicate emails/usernames from crashing the DB
+
         if User.query.filter_by(username=username).first():
             flash("Username already exists!", "error")
             return redirect(url_for('register'))
@@ -210,7 +203,7 @@ def register():
             flash("Email is already registered!", "error")
             return redirect(url_for('register'))
             
-        # Hashing the password directly addresses the privacy/security requirements
+    
         hashed_pw = generate_password_hash(password)
         new_user = User(username=username, email=email, password_hash=hashed_pw)
         db.session.add(new_user)
@@ -228,7 +221,7 @@ def login():
         password = request.form['password']
         user = User.query.filter_by(username=username).first()
         
-        # Validating the hashed password securely
+
         if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.id
             return redirect(url_for('profile'))
@@ -261,13 +254,13 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
         
         if user:
-            # Generate a secure, unique reset token
+        
             token = str(uuid.uuid4())
             user.reset_token = token
             db.session.commit()
             
             reset_link = url_for('reset_password', token=token, _external=True)
-            # Mocking email functionality in the terminal for testing purposes
+    
             print(f"\n\n=== NEW MESSAGE ===")
             print(f"To: {user.email}")
             print(f"Click this link to reset your password: {reset_link}")
@@ -294,7 +287,7 @@ def reset_password(token):
     return render_template('reset_password.html')
 
 
-# --- CUSTOM ERROR HANDLERS (Making the code unbreakable) ---
+#CUSTOM ERROR HANDLERS#
 
 @app.errorhandler(404)
 def page_not_found(error):

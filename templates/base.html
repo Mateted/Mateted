@@ -6,8 +6,7 @@
     <title>GD Mod Hub</title>
     
     <style>
-        /* I chose a dark background (#0F131A) with light text to reduce eye strain, 
-           which fits the typical aesthetic of gaming communities like Geometry Dash. */
+        /* dark background, which fits aesthetic of Geometry Dash. */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0F131A;
@@ -22,7 +21,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /* The neon blue border gives the site its 'hub' identity without being visually overwhelming */
+            /* The neon blue border*/
             border-bottom: 2px solid #00E5FF; 
         }
 
@@ -44,7 +43,6 @@
             transition: color 0.1s ease;
         }
 
-        /* Providing visual feedback on hover is a key HCI principle so users know links are clickable */
         .nav-links a:hover {
             color: #00E5FF;
         }
@@ -55,9 +53,6 @@
             padding: 0 20px;
         }
 
-        /* --- NEW: FLASH MESSAGE STYLES --- */
-        /* I designed these alert boxes to provide immediate feedback to the user based on their actions 
-           (e.g., successful login, error saving mod). This meets the HCI 'visibility of system status' heuristic. */
         .alert {
             padding: 15px;
             margin-bottom: 25px;
@@ -76,9 +71,6 @@
             color: #39FF14;
         }
 
-        /* --- NEW: RESPONSIVE DESIGN --- */
-        /* Ensuring the layout doesn't break if the user is viewing the site on a smaller monitor or split-screen */
-        @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
                 gap: 15px;
