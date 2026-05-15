@@ -5,8 +5,28 @@
     <p style="color: #A0AEC0; font-size: 1.2em; text-transform: uppercase; letter-spacing: 1px;">Member of GD Mod Hub</p>
     
     <div style="margin-top: 40px; border-top: 1px solid #2D3748; padding-top: 30px;">
-        <h3 style="color: #39FF14; text-transform: uppercase;">Downloaded Mods</h3>
-        <p style="color: #E2E8F0; font-style: italic;">We will add the tracking system for this next.</p>
+        <h3 style="color: #39FF14; text-transform: uppercase;">My Saved Library</h3>
+        
+        {% if saved_mods %}
+            <ul style="list-style-type: none; padding: 0; text-align: left;">
+            {% for mod in saved_mods %}
+                <li style="margin-bottom: 15px; background: #0F131A; border: 1px solid #4A5568; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <a href="/mod/{{ mod.mod_id }}" style="color: white; text-decoration: none; font-size: 1.2em; font-weight: bold; transition: color 0.2s;" onmouseover="this.style.color='#00E5FF'" onmouseout="this.style.color='white'">
+                            {{ mod.title }}
+                        </a>
+                        <span style="color: #A0AEC0; font-size: 0.9em; margin-left: 10px;">by {{ mod.creator }}</span>
+                    </div>
+                    
+                    <a href="{{ url_for('unsave_mod', id=mod.id) }}" style="color: #FC8181; text-decoration: none; font-size: 0.9em; font-weight: bold;">
+                        [REMOVE]
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p style="color: #E2E8F0; font-style: italic;">You haven't saved any mods to your library yet. Go find some!</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

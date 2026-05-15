@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GD Mod Hub</title>
+    
     <style>
+        /* I chose a dark background (#0F131A) with light text to reduce eye strain, 
+           which fits the typical aesthetic of gaming communities like Geometry Dash. */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0F131A;
@@ -12,14 +15,17 @@
             margin: 0;
             padding: 0;
         }
+
         .navbar {
             background-color: #1A202C;
             padding: 15px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #00E5FF;
+            /* The neon blue border gives the site its 'hub' identity without being visually overwhelming */
+            border-bottom: 2px solid #00E5FF; 
         }
+
         .nav-brand {
             font-size: 1.6em;
             font-weight: 800;
@@ -28,6 +34,7 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
+
         .nav-links a {
             color: #E2E8F0;
             text-decoration: none;
@@ -36,21 +43,61 @@
             margin-left: 25px;
             transition: color 0.1s ease;
         }
+
+        /* Providing visual feedback on hover is a key HCI principle so users know links are clickable */
         .nav-links a:hover {
             color: #00E5FF;
         }
+
         .container {
             max-width: 1000px; 
             margin: 40px auto;
             padding: 0 20px;
         }
+
+        /* --- NEW: FLASH MESSAGE STYLES --- */
+        /* I designed these alert boxes to provide immediate feedback to the user based on their actions 
+           (e.g., successful login, error saving mod). This meets the HCI 'visibility of system status' heuristic. */
+        .alert {
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .alert.error {
+            background-color: rgba(252, 129, 129, 0.1);
+            border: 1px solid #FC8181;
+            color: #FC8181;
+        }
+        .alert.success {
+            background-color: rgba(57, 255, 20, 0.1);
+            border: 1px solid #39FF14;
+            color: #39FF14;
+        }
+
+        /* --- NEW: RESPONSIVE DESIGN --- */
+        /* Ensuring the layout doesn't break if the user is viewing the site on a smaller monitor or split-screen */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+            .nav-links a {
+                margin: 0 10px;
+                font-size: 1em;
+            }
+        }
     </style>
 </head>
 <body>
+    
     <div class="navbar">
         <a href="/" class="nav-brand">GD Mod Hub</a>
         <div class="nav-links">
             <a href="/">Home</a>
+            
             {% if session.get('user_id') %}
                 <a href="/profile" style="color: #39FF14;">My Profile</a>
                 <a href="/upload">Upload</a>
@@ -61,8 +108,20 @@
             {% endif %}
         </div>
     </div>
+
     <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </div>
+
 </body>
 </html>

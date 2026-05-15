@@ -1,22 +1,28 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div style="max-width: 500px; margin: auto; background: #1A202C; padding: 30px; border-radius: 12px; border: 1px solid #00E5FF;">
-    <h2 style="color: #39FF14; text-align: center;">Upload New Mod</h2>
+<div style="max-width: 400px; margin: 50px auto; background: #1A202C; border: 1px solid #39FF14; padding: 40px; text-align: center;">
+    <h2 style="color: #39FF14; text-transform: uppercase; margin-bottom: 30px;">Upload New Mod</h2>
     
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="margin-bottom: 20px; padding: 10px; border: 1px solid {% if category == 'error' %}#FC8181{% else %}#39FF14{% endif %}; color: {% if category == 'error' %}#FC8181{% else %}#39FF14{% endif %};">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <form method="POST">
-        <label>Mod Title</label>
-        <input type="text" name="title" placeholder="e.g. Bloodbath Texture Pack" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none;" required>
+        <input type="text" name="title" placeholder="Mod Title (e.g. Bloodbath Texture Pack)" required style="width: 90%; padding: 15px; margin-bottom: 15px; background: #0F131A; border: 1px solid #2D3748; color: white; font-size: 1.1em; outline: none;">
         
-        <label>Creator Name</label>
-        <input type="text" name="creator" placeholder="Your Username" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none;" required>
+        <input type="text" name="creator" placeholder="Creator Name" required style="width: 90%; padding: 15px; margin-bottom: 15px; background: #0F131A; border: 1px solid #2D3748; color: white; font-size: 1.1em; outline: none;">
         
-        <label>Description</label>
-        <textarea name="description" placeholder="What does this mod do?" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; height: 100px;" required></textarea>
+        <textarea name="description" placeholder="Description: What does this mod do?" required style="width: 90%; padding: 15px; margin-bottom: 25px; background: #0F131A; border: 1px solid #2D3748; color: white; font-size: 1.1em; outline: none; height: 100px; resize: vertical; font-family: inherit;"></textarea>
         
-        <button type="submit" style="width: 100%; padding: 12px; background: #39FF14; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px;">
-            Publish Mod
-        </button>
+        <button type="submit" style="width: 100%; padding: 15px; background: #39FF14; color: #1A202C; border: none; font-weight: bold; font-size: 1.2em; cursor: pointer; text-transform: uppercase; margin-bottom: 20px;">Publish Mod</button>
     </form>
+    
+    <a href="/" style="color: #A0AEC0; text-decoration: none; font-size: 0.9em;">Cancel and go back</a>
 </div>
 {% endblock %}
